@@ -11,22 +11,13 @@ namespace Robots_Lab2
         static void Main(string[] args)
         {
             //var path = @"D:/Desktop/test.txt";
-            var path = @"D:\Desktop\Data";
+            var pathWin = "D:/Desktop/Data";
+            var pathLin = "/home/aksios";
 
-            var trainPath = "D:/Desktop/Data/Train";
-            var testPath = "D:/Desktop/Data/Test";
+            var trainPath = Path.Combine(pathLin, "Data/Train");// "/home/aksios/Data/Train";
+            var testPath = Path.Combine(pathLin, "Data/Test"); //"/home/aksios/Data/Test";
 
             var numObjects = new int[] { 2, 4, 6, 8, 10 };
-            //var numObjects = new int[] { 1,2,3,4 };
-
-            //var objects = GetObjects<IObjectTrain>(trainPath, numObjects);
-
-            //Train(objects);
-
-            //var testObjects = GetObjects<IObjectTest>(testPath, numObjects);
-            //var testTrainObject = GetObjects<IObjectTest>(testPath, numObjects);
-
-            //Test(testObjects, objects);
 
             var info = 0d;
             var numinfo = 0;
@@ -79,61 +70,6 @@ namespace Robots_Lab2
             }
 
             Console.WriteLine($"По итогу самый информативный признак: {numinfo}, а самый не информативный: {numNotinfo}.");
-
-            //var avg = GetAvg(objects);
-            //int ij = avg[0].Length;
-
-            //var w = GetW(ij, objects, avg);
-            //var a = Matrix.Inverse(w);
-
-
-
-            //Console.WriteLine(w.AsString());
-            //Console.WriteLine(a.AsString());
-
-            //var list = new List<double>();
-
-
-
-            //var p = objects[0].Objects[0].Length;
-            //var n = objects.Sum(s => s.Objects.GetLength(0));
-            //var g = objects.Count;
-
-            //var hs = new double[g][];
-
-
-            //for (int i = 0; i < g; i++)
-            //{
-            //    var bks = new List<double>();
-
-            //    for (int j = 0; j < p; j++)
-            //    {
-            //        bks.Add(GetBiK(a[j], avg[i], n, g, p));
-            //    }
-
-            //    var b0 = GetB0(bks.ToArray(), avg[i]);
-
-            //    var hdsd = new double[p];
-
-            //    for (int f = 0; f < p; f++)
-            //    {
-            //        hdsd[f] = GetH(b0, bks.ToArray(), objects[i].Objects[f]);
-            //    }
-
-            //    hs[i] = hdsd;
-            //}
-
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    var res = GetBiK(a[i], avg[0], 15, 3, 4);
-            //    list.Add(res);
-            //}
-
-            //var b0 = GetB0(list.ToArray(), avg[0]);
-
-
-            //var h = GetH(b0, list.ToArray(), objects[0].Objects[0]);
-
 
 
             var sd = "";
