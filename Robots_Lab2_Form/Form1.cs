@@ -3,34 +3,62 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
-namespace Robots_Lab2
+using Robots_Lab2;
+
+namespace Robots_Lab2_Form
 {
-    class Program
+    public partial class Form1 : Form
     {
-        static void Main(string[] args)
+        public Form1()
         {
-            //var path = @"D:/Desktop/test.txt";
+            InitializeComponent();
+        }
+
+        private void PrintLineToConsole(string text = null)
+        {
+            if (text != null) RtbConsole.Text += text;
+            RtbConsole.Text += Environment.NewLine;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
             var pathWin = "D:/Desktop/Data";
             var pathLin = "/home/aksios/Data";
 
             var trainPath = Path.Combine(pathWin, "Train");
-            var testPath = Path.Combine(pathWin, "Test"); 
+            var testPath = Path.Combine(pathWin, "Test");
 
             var numObjects = new int[] { 2, 4, 6, 8, 10 };
 
-            LearnAndTest(trainPath, trainPath, numObjects);
+            PrintLineToConsole("Номера всех признаков: " + string.Join(", ", numObjects));
 
-            Console.WriteLine();
-            Console.WriteLine();
+            var objects = GetObjects<IObjectTrain>(trainPath, numObjects);
+            Train(objects);
 
-            LearnAndTest(trainPath, testPath, numObjects);
+            PrintLineToConsole("Коэффициенты:");
+            foreach (var obj in objects)
+            {
+                PrintLineToConsole($"H ({obj.Name}): {string.Join(", ", obj.H)})");
+            }
 
 
+            PrintLineToConsole("------");
+            PrintLineToConsole("Начинаем обучение с помощью обучающей выборки и тестирование на самой же обучающей выборке...");
+            LearnAndTest(trainPath, trainPath, numObjects, "Train");
+            PrintLineToConsole("------");
+
+            PrintLineToConsole();
+
+            PrintLineToConsole("------");
+            PrintLineToConsole("Начинаем обучение с помощью обучающей выборки и тестирование выборке для тестирования...");
+            LearnAndTest(trainPath, testPath, numObjects, "Test");
+            PrintLineToConsole("------");
 
         }
 
-        private static void LearnAndTest(string trainPath, string testPath, int[] numObjects)
+        void LearnAndTest(string trainPath, string testPath, int[] numObjects, string nameChart)
         {
             var info = 0d;
             var numinfo = 0;
@@ -55,7 +83,6 @@ namespace Robots_Lab2
                 Train(objects);
 
                 var testObjects = GetObjects<IObjectTest>(testPath, nums);
-                //var testObjects = GetObjects<IObjectTest>(trainPath, nums);
                 Test(testObjects, objects);
 
                 var allCount = (double)testObjects.Sum(s => s.Objects.GetLength(0));
@@ -79,13 +106,14 @@ namespace Robots_Lab2
                     }
                 }
 
-                Console.WriteLine($"С признаками: {string.Join(", ", nums)}. Количество успешно распознанных: {success}. Количество не распознанных: {error}. Успех: {luck}%");
+                PrintLineToConsole($"С признаками: {string.Join(", ", nums)}. Количество успешно распознанных: {success}. Количество не распознанных: {error}. Успех: {luck}%");
+                chart1.Series[nameChart].Points.AddXY(i + 1, luck);
             }
 
-            Console.WriteLine($"По итогу самый информативный признак: {numinfo}, а самый не информативный: {numNotinfo}.");
+            PrintLineToConsole($"По итогу самый информативный признак: {numinfo}, а самый не информативный: {numNotinfo}.");
         }
 
-        private static void Test(List<IObjectTest> testObjects, List<IObjectTrain> objects)
+        void Test(List<IObjectTest> testObjects, List<IObjectTrain> objects)
         {
             var count = objects.Count;
 
@@ -120,7 +148,7 @@ namespace Robots_Lab2
 
         }
 
-        static void Train(List<IObjectTrain> train)
+        void Train(List<IObjectTrain> train)
         {
             var avg = GetAvg(train);
             int ij = avg[0].Length;
@@ -162,7 +190,7 @@ namespace Robots_Lab2
 
         }
 
-        static double GetH(double b0, double[] bk, double[] b)
+        double GetH(double b0, double[] bk, double[] b)
         {
             var res = 0d;
 
@@ -174,7 +202,7 @@ namespace Robots_Lab2
             return b0 + res;
         }
 
-        static double GetH(double[] H, double[] x)
+        double GetH(double[] H, double[] x)
         {
             var res = H[0];
 
@@ -186,7 +214,7 @@ namespace Robots_Lab2
             return res;
         }
 
-        static double GetB0(double[] bk, double[] X)
+        double GetB0(double[] bk, double[] X)
         {
             var res = 0d;
 
@@ -199,7 +227,7 @@ namespace Robots_Lab2
             return -0.5 * res;
         }
 
-        static double GetBiK(double[] a, double[] X, int n, int g, int p)
+        double GetBiK(double[] a, double[] X, int n, int g, int p)
         {
             var sum = 0d;
 
@@ -212,7 +240,7 @@ namespace Robots_Lab2
             return (n - g) * sum;
         }
 
-        static List<T> GetObjects<T>(string folderPath, int[] nums) where T : class
+        List<T> GetObjects<T>(string folderPath, int[] nums) where T : class
         {
             var objects = new List<T>();
 
@@ -229,7 +257,7 @@ namespace Robots_Lab2
             return objects;
         }
 
-        static double[][] GetAvg(List<IObjectTrain> objects)
+        double[][] GetAvg(List<IObjectTrain> objects)
         {
             var avgMas = new double[objects.Count][];
 
@@ -250,7 +278,7 @@ namespace Robots_Lab2
             return avgMas;
         }
 
-        static double[][] GetW(int n, List<IObjectTrain> objects, double[][] avg)
+        double[][] GetW(int n, List<IObjectTrain> objects, double[][] avg)
         {
             var resultW = new double[n][];
 
@@ -286,6 +314,5 @@ namespace Robots_Lab2
 
             return resultW;
         }
-
     }
 }
